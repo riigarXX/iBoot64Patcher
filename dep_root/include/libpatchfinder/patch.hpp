@@ -5,8 +5,8 @@
 namespace tihmstar {
     namespace patchfinder {
         class patch {
-            size_t _patchSize;
-            const void *_patch;
+            mutable size_t _patchSize;  // Se vuelve mutable
+            mutable const void *_patch; // Se vuelve mutable
         public:
             inline size_t getPatchSize() const { return _patchSize; }
             inline const void *getPatch() const { return _patch; }

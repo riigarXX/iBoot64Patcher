@@ -11,7 +11,7 @@
 #include <libpatchfinder/ibootpatchfinder/ibootpatchfinder64.hpp>
 #include <libpatchfinder/kernelpatchfinder/kernelpatchfinder32.hpp>
 #include <libpatchfinder/kernelpatchfinder/kernelpatchfinder64.hpp>
-#include <libpatchfinder/patch.hpp> // Include the new patch.hpp header
+#include "libpatchfinder/patch.hpp" // Include the new patch.hpp header
 
 #define HAS_ARG(x,y) (!strcmp(argv[i], x) && (i + y) < argc)
 
