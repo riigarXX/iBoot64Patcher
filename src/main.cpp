@@ -1,10 +1,4 @@
-//
-//  main.cpp
-//  src
-//
-//  Created by tihmstar on 27.09.19.
-//  Copyright © 2019 tihmstar. All rights reserved.
-//
+// main.cpp
 
 #include <stdio.h>
 #include <string.h>
@@ -17,6 +11,7 @@
 #include <libpatchfinder/ibootpatchfinder/ibootpatchfinder64.hpp>
 #include <libpatchfinder/kernelpatchfinder/kernelpatchfinder32.hpp>
 #include <libpatchfinder/kernelpatchfinder/kernelpatchfinder64.hpp>
+#include <libpatchfinder/patch.hpp> // Include the new patch.hpp header
 
 #define HAS_ARG(x,y) (!strcmp(argv[i], x) && (i + y) < argc)
 
@@ -184,18 +179,18 @@ int main(int argc, const char * argv[]) {
     fclose(fp2);
 
     for (const auto& p2 : patches) {
-      printf("%s: Applying patch=0x%016llx: ", __FUNCTION__, p2._location);
-      for (int i=0; i<p2._patchSize; i++) {
-        printf("%02x",((uint8_t*)p2._patch)[i]);
+      printf("%s: Applying patch=0x%016llx: ", __FUNCTION__, p2.getPatchSize());
+      for (int i=0; i<p2.getPatchSize(); i++) {
+        printf("%02x",((uint8_t*)p2.getPatch())[i]);
       }
-      if (p2._patchSize == 4) {
-        printf(" 0x%08x",*(uint32_t*)p2._patch);
-      } else if (p2._patchSize == 2) {
-        printf(" 0x%04x",*(uint16_t*)p2._patch);
+      if (p2.getPatchSize() == 4) {
+        printf(" 0x%08x",*(uint32_t*)p2.getPatch());
+      } else if (p2.getPatchSize() == 2) {
+        printf(" 0x%04x",*(uint16_t*)p2.getPatch());
       }
       printf("\n");
-      auto off = (ibootpatchfinder::loc64_t)(p2._location - ibpf->find_base());
-      memcpy(&deciboot[off], p2._patch, p2._patchSize);
+      auto off = (ibootpatchfinder::loc64_t)(p2.getPatchSize() - ibpf->find_base());
+      memcpy(&deciboot[off], p2.getPatch(), p2.getPatchSize());
     }
     printf("%s: Writing out patched file to %s...\n", __FUNCTION__, iboot_patched_path);
     ret = fwrite(deciboot,1, iboot_size, fp);
@@ -203,8 +198,6 @@ int main(int argc, const char * argv[]) {
       printf("%s: Unable to write patched iBoot, wrote size %zu/%zu!\n", __FUNCTION__, ret, iboot_size);
       fflush(fp);
       fclose(fp);
-      fflush(fp2);
-      fclose(fp2);
       free(deciboot);
       return -1;
     }
